@@ -13,7 +13,7 @@ Se o usuário enviar qualquer uma dessas mensagens (ou variações):
 - "Qual variante escalar?"
 - "Analise todos os testes"
 
-**Você deve agir imediatamente**, sem pedir confirmação.
+**Você deve agir imediatamente**, sem pedir confirmação. Nunca use worktrees — trabalhe sempre nos arquivos originais do projeto.
 
 Execute `python analyze.py` para **todos** os arquivos `.csv` encontrados em `datasets/`, sempre, sem perguntar.
 
