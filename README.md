@@ -32,9 +32,8 @@ Solução reutilizável para análise de testes A/B de cashback. Basta abrir o C
 
 ## Alternativa via Python (opcional)
 
-Se preferir rodar sem o Claude Code:
+Se preferir rodar para usar menos do Claude Code e tiver Python + Biblioteca Pandas instalado
 
 ```bash
-pip install pandas scipy
-python analyze.py datasets/dataset_01_parceiroA.csv
+python analyze.py datasets/dataset_01_parceiroA.csv 
 ```
