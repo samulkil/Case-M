@@ -15,13 +15,7 @@ Se o usuário enviar qualquer uma dessas mensagens (ou variações):
 
 **Você deve agir imediatamente**, sem pedir confirmação.
 
-### Se o usuário indicar um arquivo específico:
-Execute: `python analyze.py datasets/<arquivo_indicado>.csv`
-
-### Se o usuário não indicar arquivo (pergunta genérica):
-1. Liste os arquivos disponíveis em `datasets/`
-2. Pergunte qual analisar — ou ofereça analisar todos
-3. Execute o `analyze.py` para cada um escolhido
+Execute `python analyze.py` para **todos** os arquivos `.csv` encontrados em `datasets/`, sempre, sem perguntar.
 
 Obs: todos os datasets estão dentro da pasta `datasets/`
 
