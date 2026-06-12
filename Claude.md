@@ -15,42 +15,41 @@ Se o usuário enviar qualquer uma dessas mensagens (ou variações):
 
 **Você deve agir imediatamente**, sem pedir confirmação. Nunca use worktrees — trabalhe sempre nos arquivos originais do projeto.
 
-Execute `python analyze.py` para **todos** os arquivos `.csv` encontrados em `datasets/`, sempre, sem perguntar.
-
-Obs: todos os datasets estão dentro da pasta `datasets/`
+Execute a análise para **todos** os arquivos `.csv` encontrados em `datasets/`, sempre, sem perguntar.
 
 ## O que você deve fazer (sempre nessa ordem)
 
-### 1. Ler e limpar os dados
-- Carregar o CSV indicado pelo usuário
-- Converter colunas monetárias (ex: "R$ 1.234") para float
-- Verificar e tratar valores nulos ou inconsistentes
+### 1. Ler os dados
+- Ler cada CSV diretamente com a ferramenta de leitura de arquivos
+- Identificar os grupos de usuários, parceiro e período do teste
 
 ### 2. Calcular métricas por grupo
 Para cada variante (Grupo 1, Grupo 2, etc.), calcule:
 - **Ticket médio**: vendas totais / compradores
-- **Cashback rate**: cashback / vendas totais (custo para o Méliuz)
+- **Cashback rate**: cashback / vendas totais — custo para o Méliuz (menor = melhor)
 - **Margem do Méliuz**: (comissão - cashback) / vendas totais
-- **ROI do cashback**: vendas totais / cashback
+- **ROI do cashback**: vendas totais / cashback — retorno por R$ gasto (maior = melhor)
+- **Compradores/dia**: média diária de compradores únicos
 
-### 3. Análise estatística
-- Rodar teste t de Student ou Mann-Whitney entre os grupos
-- Calcular p-value (significativo se < 0,05)
-- Indicar o nível de confiança do resultado
+### 3. Comparar os grupos
+- Identificar qual grupo tem melhor ROI do cashback mantendo margem positiva
+- Verificar se há diferença relevante entre os grupos (variação > 10% já é significativa para decisão de negócio)
+- Apontar trade-offs: volume de compradores vs eficiência do cashback
 
 ### 4. Gerar relatório
-- Salvar em reports/relatorio_<parceiro>.md
-- Formato: apresentável para um gestor (tabela de métricas + recomendação clara)
+- Salvar em `reports/relatorio_<Parceiro>.md`
+- Formato: apresentável para um gestor, com tabela de métricas e recomendação clara
 
 ### 5. Registrar na planilha
-- Adicionar uma linha em resultados.csv com:
-  nome_teste, descricao, variante_vencedora, decisao, data_analise
+- Adicionar uma linha em `resultados.csv` com:
+  `nome_teste, descricao, variante_vencedora, decisao, data_analise`
+- Se o arquivo não existir, criá-lo com o cabeçalho primeiro
 
 ## Regras importantes
+- Não use Python, scripts ou dependências externas — faça tudo com leitura e escrita de arquivos nativos
 - A solução deve funcionar para QUALQUER dataset no schema padrão
-- Nunca altere o script — apenas o arquivo de entrada muda
 - A decisão final deve responder: "Qual variante escalar para 100% do tráfego?"
-- Se o resultado não for estatisticamente significativo, diga isso claramente
+- Se as diferenças entre grupos forem pequenas (< 5%), deixe isso claro no relatório
 
 ## Schema dos datasets
 | Coluna | Tipo | Descrição |
@@ -59,6 +58,6 @@ Para cada variante (Grupo 1, Grupo 2, etc.), calcule:
 | Grupos de usuários | string | Variante do teste |
 | Parceiro | string | Parceiro do teste |
 | compradores | int | Usuários únicos que compraram |
-| comissão | R$ string | Comissão paga pelo parceiro |
+| comissão | R$ string | Comissão paga pelo parceiro ao Méliuz |
 | cashback | R$ string | Cashback distribuído aos usuários |
 | vendas totais | R$ string | GMV do dia |
