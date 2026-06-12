@@ -15,7 +15,7 @@ Se o usuário enviar qualquer uma dessas mensagens (ou variações):
 
 **Você deve agir imediatamente**, sem pedir confirmação. Nunca use worktrees — trabalhe sempre nos arquivos originais do projeto.
 
-Execute a análise para **todos** os arquivos `.csv` encontrados em `datasets/`, sempre, sem perguntar.
+Liste todos os arquivos `.csv` encontrados em `datasets/`, numerados, e pergunte ao usuário quais deseja analisar antes de começar. Aguarde a resposta antes de prosseguir.
 
 ## O que você deve fazer (sempre nessa ordem)
 
