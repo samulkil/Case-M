@@ -110,7 +110,7 @@ def gerar_relatorio(df, metrics, parceiro, periodo, p_value, significativo, conf
     safe_name = parceiro.replace(" ", "_")
     filepath = f"reports/relatorio_{safe_name}.md"
 
-    sig_texto = f"✅ Significativo (p = {p_value}, confiança {confianca}%)" if significativo else f"⚠️ Não significativo (p = {p_value}) — resultado inconclusivo"
+    sig_texto = f"Significativo (p = {p_value}, confianca {confianca}%)" if significativo else f"Nao significativo (p = {p_value}) - resultado inconclusivo"
 
     linhas_tabela = ""
     for _, row in metrics.iterrows():
@@ -191,7 +191,11 @@ def main():
         print("Ex:  python analyze.py datasets/dataset_01_parceiroA.csv")
         sys.exit(1)
 
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
     filepath = sys.argv[1]
+    if not os.path.isabs(filepath):
+        filepath = os.path.join(script_dir, filepath)
     print(f"\n Carregando dataset: {filepath}")
 
     df = load_dataset(filepath)
@@ -222,7 +226,7 @@ def main():
     print("\n Registrando na planilha...")
     registrar_resultado(parceiro, periodo, nome_vencedor, decisao)
 
-    print(f"\n✅ Análise concluída! Decisão: {decisao}\n")
+    print(f"\nAnalise concluida! Decisao: {decisao}\n")
 
 
 if __name__ == "__main__":
