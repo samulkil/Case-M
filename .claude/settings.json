@@ -1,12 +1,15 @@
 {
-  "mcpServers": {
-    "mcp-gsheets": {
-      "command": "npx",
-      "args": ["-y", "mcp-gsheets@latest"],
-      "env": {
-        "GOOGLE_PROJECT_ID": "electric-block-499518-u6",
-        "GOOGLE_APPLICATION_CREDENTIALS": "D:\\GIT\\Case-M\\electric-block-499518-u6-13b4833e0c5c.json"
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File \"D:\\GIT\\Case-M\\scripts\\upload_sheets.ps1\" >> \"D:\\GIT\\Case-M\\scripts\\upload_sheets.log\" 2>&1"
+          }
+        ]
       }
-    }
+    ]
   }
 }
