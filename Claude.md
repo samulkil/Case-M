@@ -41,9 +41,10 @@ Para cada variante (Grupo 1, Grupo 2, etc.), calcule:
 - Formato: apresentável para um gestor, com tabela de métricas e recomendação clara
 
 ### 5. Registrar na planilha
-- Adicionar uma linha em `resultados.csv` com:
-  `nome_teste, descricao, variante_vencedora, decisao, data_analise`
-- Se o arquivo não existir, criá-lo com o cabeçalho primeiro
+- Use o MCP do Google Sheets para registrar na planilha com ID `11n95hFQzc-ax-iLg6tuLK7R4-48DNH9zAth1S6dN7XI`
+- Se a aba estiver vazia, crie o cabeçalho primeiro: `nome_teste, descricao, variante_vencedora, decisao, data_analise`
+- Adicione uma linha por teste analisado
+- Também salve localmente em `resultados.csv` como backup
 
 ## Regras importantes
 - Não use Python, scripts ou dependências externas — faça tudo com leitura e escrita de arquivos nativos
