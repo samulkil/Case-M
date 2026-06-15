@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "mcp-gsheets": {
+      "command": "npx",
+      "args": ["-y", "mcp-gsheets@latest"],
+      "env": {
+        "GOOGLE_PROJECT_ID": "electric-block-499518-u6",
+        "GOOGLE_APPLICATION_CREDENTIALS": "${workspaceFolder}/electric-block-499518-u6-13b4833e0c5c.json"
+      }
+    }
+  }
+}
