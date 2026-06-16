@@ -1,4 +1,4 @@
 nome_teste,descricao,variante_vencedora,decisao,data_analise
-dataset_01_parceiroA,Teste A/B de cashback Parceiro A (3 grupos: ~4%/~6%/~7%) - Jan a Abr 2011 (92 dias),Grupo 1,Escalar Grupo 1 (cashback ~4%): melhor ROI (23.9x) maior margem (7.20%) e maior lucro absoluto (R$403.711),2026-06-15
-dataset_02_parceiroB,Teste A/B de cashback Parceiro B (3 grupos: 4%/6%/9%) - Mai a Jun 2011 (61 dias),Grupo 1,Escalar Grupo 1 (cashback 4%): dominante em todas as metricas - mais compradores (131/dia) maior margem (7%) e lucro 5.5x maior que G3,2026-06-15
-dataset_03_parceiroC,Teste A/B de cashback Parceiro C (2 grupos: 5%/7%) - Jul a Ago 2011 (45 dias),Grupo 1,Escalar Grupo 1 (cashback 5%): unica opcao viavel - Grupo 2 tem margem zero (cashback = comissao integralmente),2026-06-15
+Parceiro A,Teste de cashback com 3 variantes (4,16%/5,77%/7,42% do GMV) — 92 dias,Grupo 1,Escalar Grupo 1: maior ROI (24x) e maior margem (6,84%).,2026-06-15
+Parceiro B,Teste de cashback com 3 variantes (4%/6%/9% do GMV) — 61 dias,Grupo 1,Escalar Grupo 1: ROI 25x e margem 7%. Cashback menor atraiu MAIS compradores (131/dia vs 89/dia).,2026-06-15
+Parceiro C,Teste de cashback com 2 variantes (5%/7% do GMV) — 45 dias,Grupo 1,Escalar Grupo 1: margem 2% vs 0% no G2. Volume idêntico (101 vs 100 compradores/dia).,2026-06-15

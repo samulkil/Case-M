@@ -41,10 +41,9 @@ Para cada variante (Grupo 1, Grupo 2, etc.), calcule:
 - Formato: apresentável para um gestor, com tabela de métricas e recomendação clara
 
 ### 5. Registrar na planilha
-- Use o MCP do Google Sheets para registrar na planilha com ID `11n95hFQzc-ax-iLg6tuLK7R4-48DNH9zAth1S6dN7XI`
-- Se a aba estiver vazia, crie o cabeçalho primeiro: `nome_teste, descricao, variante_vencedora, decisao, data_analise`
-- Adicione uma linha por teste analisado
-- Também salve localmente em `resultados.csv` como backup
+- Salve os resultados em `resultados.csv` (schema: `nome_teste,descricao,variante_vencedora,decisao,data_analise`)
+- Se o arquivo não existir, crie com o cabeçalho; se já existir, sobrescreva com todos os testes analisados
+- O upload para o Google Sheets é feito **automaticamente** pelo hook configurado em `.claude/settings.json` — não tente usar MCP nem chamar scripts manualmente
 
 ## Regras importantes
 - Não use Python, scripts ou dependências externas — faça tudo com leitura e escrita de arquivos nativos
