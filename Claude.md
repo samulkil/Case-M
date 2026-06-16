@@ -15,9 +15,13 @@ Se o usuário enviar qualquer uma dessas mensagens (ou variações):
 
 **Você deve agir imediatamente**, sem pedir confirmação. Nunca use worktrees — trabalhe sempre nos arquivos originais do projeto.
 
-Liste todos os arquivos `.csv` encontrados em `datasets/`, numerados, e pergunte ao usuário quais deseja analisar antes de começar. Aguarde a resposta antes de prosseguir.
+**Passo 1 — escolha dos datasets (PARE aqui e aguarde resposta):**
 
-Após o usuário escolher os datasets, pergunte como deseja fazer a análise:
+Liste todos os arquivos `.csv` encontrados em `datasets/`, numerados. Pergunte quais o usuário deseja analisar. **Envie APENAS essa pergunta e pare. Não pergunte mais nada. Não mencione modos. Aguarde a resposta do usuário.**
+
+**Passo 2 — só após receber a resposta do Passo 1 — escolha do modo (PARE aqui e aguarde resposta):**
+
+Pergunte como deseja fazer a análise:
 
 > **Como você prefere realizar a análise?**
 > 
@@ -25,7 +29,7 @@ Após o usuário escolher os datasets, pergunte como deseja fazer a análise:
 > 
 > **[2] Python + Node.js** — análise mais rápida via scripts otimizados. Requer Python e Node.js instalados na máquina.
 
-Aguarde a resposta antes de prosseguir.
+**Envie APENAS essa pergunta e pare. Aguarde a resposta do usuário antes de começar qualquer análise.**
 
 - Se o usuário escolher **[1]**: analise os datasets **estritamente um por vez, em sequência — NÃO leia nem processe múltiplos arquivos ao mesmo tempo**. Fluxo obrigatório: leia o primeiro arquivo → calcule as métricas → determine o vencedor → gere o relatório → guarde o resultado em memória → só então leia o segundo arquivo, e assim por diante. Só escreva no `resultados.csv` e faça o upload **depois de concluir TODOS os datasets** — nunca escreva resultados parciais.
 - Se o usuário escolher **[2]**: execute `python analyze.py datasets/<arquivo>` para cada dataset escolhido, depois registre no Sheets usando o MCP do Google Sheets (mcp-gsheets) — não use PowerShell nem scripts manuais.
