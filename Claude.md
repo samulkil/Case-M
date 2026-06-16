@@ -28,7 +28,7 @@ Após o usuário escolher os datasets, pergunte como deseja fazer a análise:
 Aguarde a resposta antes de prosseguir.
 
 - Se o usuário escolher **[1]**: siga o fluxo padrão abaixo (passos 1 a 5).
-- Se o usuário escolher **[2]**: execute `python analyze.py datasets/<arquivo>` para cada dataset escolhido, depois registre no Sheets via MCP do Google Sheets.
+- Se o usuário escolher **[2]**: execute `python analyze.py datasets/<arquivo>` para cada dataset escolhido, depois registre no Sheets usando o MCP do Google Sheets (mcp-gsheets) — não use PowerShell nem scripts manuais.
 
 ## O que você deve fazer (sempre nessa ordem)
 
