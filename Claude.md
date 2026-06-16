@@ -27,7 +27,7 @@ Após o usuário escolher os datasets, pergunte como deseja fazer a análise:
 
 Aguarde a resposta antes de prosseguir.
 
-- Se o usuário escolher **[1]**: analise os datasets **um por vez, sequencialmente**. Só escreva no `resultados.csv` e faça o upload **depois de analisar TODOS os datasets escolhidos** — nunca escreva resultados parciais.
+- Se o usuário escolher **[1]**: analise os datasets **estritamente um por vez, em sequência — NÃO leia nem processe múltiplos arquivos ao mesmo tempo**. Fluxo obrigatório: leia o primeiro arquivo → calcule as métricas → determine o vencedor → gere o relatório → guarde o resultado em memória → só então leia o segundo arquivo, e assim por diante. Só escreva no `resultados.csv` e faça o upload **depois de concluir TODOS os datasets** — nunca escreva resultados parciais.
 - Se o usuário escolher **[2]**: execute `python analyze.py datasets/<arquivo>` para cada dataset escolhido, depois registre no Sheets usando o MCP do Google Sheets (mcp-gsheets) — não use PowerShell nem scripts manuais.
 
 ## O que você deve fazer (sempre nessa ordem)
