@@ -20,7 +20,7 @@
 
 ## Análise Estatística
 
-- Significativo (p = 0.0, confianca 100.0%)
+- Significativo ao nivel de 95% de confianca (p = 0.0)
 
 ## Recomendação
 
@@ -30,4 +30,4 @@ Grupo 1 apresentou o melhor ROI de cashback (25.0x),
 com margem de 7.0% para o Méliuz e cashback rate de
 4.0% — o melhor equilíbrio entre volume de vendas e
 custo de cashback entre os grupos testados.
-O resultado é estatisticamente significativo, indicando que a diferença não é por acaso.
+O resultado é estatisticamente significativo (ANOVA/t-test, p < 0,05), a diferença entre grupos não é atribuível ao acaso.

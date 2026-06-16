@@ -19,14 +19,14 @@
 
 ## Análise Estatística
 
-- Nao significativo (p = 0.6347) - resultado inconclusivo
+- Nao significativo (p = 0.6347) — resultado inconclusivo ao nivel de 95% de confianca
 
 ## Recomendação
 
-**Escalar Grupo 1.**
+**Inconclusivo — recomenda-se estender o teste.**
 
 Grupo 1 apresentou o melhor ROI de cashback (20.0x),
 com margem de 2.0% para o Méliuz e cashback rate de
 5.0% — o melhor equilíbrio entre volume de vendas e
 custo de cashback entre os grupos testados.
-Atenção: o resultado não atingiu significância estatística — considere estender o teste antes de escalar.
+Atenção: a diferença entre grupos não atingiu significância estatística — escalar agora representa risco. Recomenda-se coletar mais dados antes de decidir.

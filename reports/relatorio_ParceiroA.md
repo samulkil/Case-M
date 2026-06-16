@@ -1,8 +1,8 @@
-# Relatório de Análise — Teste A/B Parceiro A
+# Relatório de Teste A/B — Parceiro A
 
 **Data da análise:** 2026-06-16
 **Período do teste:** 2011-01-01 a 2011-04-02 (92 dias)
-**Grupos:** Grupo 1 (4,16% cashback) · Grupo 2 (5,77% cashback) · Grupo 3 (7,42% cashback)
+**Variantes testadas:** 3 grupos (cashback de 4,16% / 5,77% / 7,42% do GMV)
 
 ---
 
@@ -10,37 +10,57 @@
 
 | Métrica | Grupo 1 | Grupo 2 | Grupo 3 |
 |---|---|---|---|
-| Vendas totais | R$ 5.605.173 | R$ 6.423.096 | R$ 6.785.856 |
-| Compradores (total) | 9.633 | 10.814 | 11.410 |
-| **Compradores/dia** | **104,7** | **117,5** | **124,0** |
-| Ticket médio | R$ 582 | R$ 594 | R$ 595 |
-| Cashback total | R$ 233.424 | R$ 370.659 | R$ 503.600 |
-| **Cashback rate** | **4,16%** | **5,77%** | **7,42%** |
+| Compradores totais | 9.633 | 10.814 | 11.410 |
+| Compradores/dia | 104,7 | 117,5 | 124,0 |
+| Vendas totais (GMV) | R$ 5.605.173 | R$ 6.423.096 | R$ 6.785.856 |
+| Vendas/dia | R$ 60.927 | R$ 69.816 | R$ 73.760 |
 | Comissão total | R$ 638.135 | R$ 728.178 | R$ 767.887 |
+| Cashback total | R$ 233.424 | R$ 370.659 | R$ 503.600 |
+| Ticket médio | R$ 581,86 | R$ 593,96 | R$ 594,73 |
+| **Cashback rate** | **4,16%** | **5,77%** | **7,42%** |
 | **Margem Méliuz** | **7,22%** | **5,57%** | **3,89%** |
-| **ROI do cashback** | **24,01x** | **17,33x** | **13,47x** |
+| **ROI do cashback** | **24,0x** | **17,3x** | **13,5x** |
 
 ---
 
-## Análise Comparativa
+## Análise Estatística
 
-### Eficiência financeira
-O Grupo 1 tem o melhor ROI do cashback (24,01x): cada R$ 1 em cashback gera R$ 24 em vendas, contra R$ 17,33 no G2 e R$ 13,47 no G3. A margem do Méliuz no Grupo 1 (7,22%) é quase o dobro da do Grupo 3 (3,89%).
+Comparação das médias de vendas diárias entre pares (aproximação de t-test/ANOVA, 95% de confiança; significativo se `t > 2,0`):
 
-### Volume de compradores
-O Grupo 3 atrai ~18% mais compradores/dia do que o Grupo 1 (124 vs 104,7). O cashback mais alto estimula mais compradores, mas a um custo desproporcionalmente maior.
+| Par | Venda/dia (A) | Venda/dia (B) | t-score | Significativo (t>2)? |
+|---|---|---|---|---|
+| G1 vs G2 | R$ 60.927 | R$ 69.816 | 1,72 | ❌ Não |
+| G1 vs G3 | R$ 60.927 | R$ 73.760 | 2,35 | ✅ Sim |
+| G2 vs G3 | R$ 69.816 | R$ 73.760 | 0,68 | ❌ Não |
 
-### Trade-off
-A diferença entre os grupos é expressiva em todas as métricas (variação > 10%). O ganho de ~18% em compradores do Grupo 3 não compensa a queda de 44% no ROI (13,47 vs 24,01) e a redução de quase metade da margem (3,89% vs 7,22%). Todas as variantes mantêm margem positiva.
+Desvios-padrão das vendas diárias: G1 ≈ R$ 32,0 mil, G2 ≈ R$ 37,7 mil, G3 ≈ R$ 41,3 mil (alta variabilidade diária, com picos sazonais).
+
+**Resultado:** apenas **1 de 3 pares** é estatisticamente significativo. Como a maioria dos pares **não** atinge `t > 2,0`, o teste é considerado **NÃO significativo**.
+
+---
+
+## Determinação do Vencedor
+
+1. Grupos com margem Méliuz positiva: todos os 3 grupos ✅
+2. Maior ROI entre os grupos válidos: **Grupo 1 — ROI 24,0x** (vencedor provisório)
+3. Teste estatístico: **Não significativo** → resultado **Inconclusivo**
+
+**Resultado: INCONCLUSIVO.** O Grupo 1 é o melhor candidato provisório, mas as diferenças de GMV diário entre os grupos não são estatisticamente robustas o suficiente para decisão definitiva.
+
+---
+
+## Trade-offs
+
+| Dimensão | Análise |
+|---|---|
+| Eficiência | G1 tem menor cashback rate (4,16%) e maior margem (7,22%) e maior ROI (24,0x) |
+| Volume | G3 atrai ~18% mais compradores/dia que G1 (124,0 vs 104,7) |
+| GMV | G3 gera +21% de GMV/dia, mas à custa de cashback 116% maior por real de venda |
+
+> **Atenção:** embora o Grupo 1 lidere em eficiência (ROI e margem), o maior volume/GMV vem do Grupo 3. O par G1 vs G2 não é estatisticamente significativo, então não há evidência conclusiva de que o cashback menor não prejudique o GMV.
 
 ---
 
 ## Recomendação
 
-> **✅ Escalar o Grupo 1 para 100% do tráfego.**
-
-Maior ROI (24,01x), maior margem (7,22%) e volume de compradores robusto (104,7/dia). O custo de cashback 115% maior no Grupo 3 não é justificado pelo incremento de 18% em compradores.
-
----
-
-*Análise gerada automaticamente em 2026-06-16*
+**Estender o teste antes de escalar.** A análise aponta o **Grupo 1 (cashback 4,16% do GMV)** como melhor candidato por eficiência (ROI 24,0x, margem 7,22%), mas a diferença de vendas diárias entre os grupos não alcança significância estatística na maioria dos pares (apenas G1 vs G3). Recomenda-se prolongar a coleta de dados para reduzir a incerteza antes de direcionar 100% do tráfego.
