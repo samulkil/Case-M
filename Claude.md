@@ -34,20 +34,42 @@ Aguarde a resposta antes de prosseguir.
 
 ### 1. Ler os dados
 - Ler cada CSV diretamente com a ferramenta de leitura de arquivos
-- Identificar os grupos de usuários, parceiro e período do teste
+- Converter colunas monetárias: remover "R$", pontos de milhar e substituir vírgula decimal por ponto — ex: "R$ 1.234,56" → 1234.56
+- Agrupar todas as linhas por `Grupos de usuários` e somar os valores
 
 ### 2. Calcular métricas por grupo
-Para cada variante (Grupo 1, Grupo 2, etc.), calcule:
-- **Ticket médio**: vendas totais / compradores
-- **Cashback rate**: cashback / vendas totais — custo para o Méliuz (menor = melhor)
-- **Margem do Méliuz**: (comissão - cashback) / vendas totais
-- **ROI do cashback**: vendas totais / cashback — retorno por R$ gasto (maior = melhor)
-- **Compradores/dia**: média diária de compradores únicos
+Para cada grupo, some todas as linhas e calcule:
+- **compradores_total** = soma de `compradores`
+- **comissao_total** = soma de `comissão` (convertida)
+- **cashback_total** = soma de `cashback` (convertida)
+- **vendas_total** = soma de `vendas totais` (convertida)
+- **dias** = número de datas únicas no grupo
 
-### 3. Comparar os grupos
-- Identificar qual grupo tem melhor ROI do cashback mantendo margem positiva
-- Verificar se há diferença relevante entre os grupos (variação > 10% já é significativa para decisão de negócio)
-- Apontar trade-offs: volume de compradores vs eficiência do cashback
+Depois calcule:
+- **Ticket médio** = vendas_total / compradores_total
+- **Cashback rate** = cashback_total / vendas_total (ex: 0,0416 = 4,16%)
+- **Margem Méliuz** = (comissao_total - cashback_total) / vendas_total
+- **ROI do cashback** = vendas_total / cashback_total (ex: 24,0x)
+- **Compradores/dia** = compradores_total / dias
+
+### 3. Determinar o vencedor
+**Critério exato (mesma lógica do analyze.py):**
+
+1. Filtre apenas grupos com **margem_meliuz > 0** (Méliuz lucra)
+2. Se nenhum grupo tiver margem positiva, use todos
+3. Entre os grupos válidos, escolha o de **maior ROI do cashback**
+4. Esse é o vencedor provisório
+
+**Teste estatístico:**
+- Com **2 grupos**: compare as vendas diárias dos dois grupos — se a diferença percentual entre as médias for > 10%, considere significativo
+- Com **3+ grupos**: compare todos os grupos entre si via ANOVA simplificada — se pelo menos um par tiver diferença > 10% na média de vendas diárias, considere significativo
+- **Alpha = 0,05** (nível de confiança de 95%)
+- Se **não significativo**: variante_vencedora = "Inconclusivo", decisão = recomendar estender o teste
+
+### 4. Apontar trade-offs
+- Volume: qual grupo tem mais compradores/dia
+- Eficiência: qual grupo tem menor cashback rate
+- Se o vencedor por ROI não for o de maior volume, mencionar explicitamente
 
 ### 4. Gerar relatório
 - Salvar em `reports/relatorio_<Parceiro>.md`
