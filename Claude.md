@@ -17,6 +17,19 @@ Se o usuário enviar qualquer uma dessas mensagens (ou variações):
 
 Liste todos os arquivos `.csv` encontrados em `datasets/`, numerados, e pergunte ao usuário quais deseja analisar antes de começar. Aguarde a resposta antes de prosseguir.
 
+Após o usuário escolher os datasets, pergunte como deseja fazer a análise:
+
+> **Como você prefere realizar a análise?**
+> 
+> **[1] Apenas Claude Code** — sem dependências externas, funciona em qualquer máquina. ⚠️ Pode levar até 10 minutos.
+> 
+> **[2] Python + Node.js** — análise mais rápida via scripts otimizados. Requer Python e Node.js instalados na máquina.
+
+Aguarde a resposta antes de prosseguir.
+
+- Se o usuário escolher **[1]**: siga o fluxo padrão abaixo (passos 1 a 5).
+- Se o usuário escolher **[2]**: execute `python analyze.py datasets/<arquivo>` para cada dataset escolhido, depois registre no Sheets via MCP do Google Sheets.
+
 ## O que você deve fazer (sempre nessa ordem)
 
 ### 1. Ler os dados
