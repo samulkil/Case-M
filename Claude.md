@@ -45,12 +45,12 @@ Para cada grupo, some todas as linhas e calcule:
 - **vendas_total** = soma de `vendas totais` (convertida)
 - **dias** = número de datas únicas no grupo
 
-Depois calcule:
-- **Ticket médio** = vendas_total / compradores_total
-- **Cashback rate** = cashback_total / vendas_total (ex: 0,0416 = 4,16%)
-- **Margem Méliuz** = (comissao_total - cashback_total) / vendas_total
-- **ROI do cashback** = vendas_total / cashback_total (ex: 24,0x)
-- **Compradores/dia** = compradores_total / dias
+Depois calcule **sem arredondar valores intermediários** — só arredonde no resultado final:
+- **Ticket médio** = vendas_total / compradores_total → arredondar para 2 casas decimais
+- **Cashback rate** = cashback_total / vendas_total → arredondar para 4 casas decimais (ex: 0,0416 = 4,16%)
+- **Margem Méliuz** = (comissao_total - cashback_total) / vendas_total → arredondar para 4 casas decimais
+- **ROI do cashback** = vendas_total / cashback_total → arredondar para 1 casa decimal (ex: 24,0x)
+- **Compradores/dia** = compradores_total / dias → arredondar para 1 casa decimal
 
 ### 3. Determinar o vencedor
 **Critério exato (mesma lógica do analyze.py):**
