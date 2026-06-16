@@ -60,10 +60,21 @@ Depois calcule **sem arredondar valores intermediários** — só arredonde no r
 3. Entre os grupos válidos, escolha o de **maior ROI do cashback**
 4. Esse é o vencedor provisório
 
-**Teste estatístico:**
-- Com **2 grupos**: compare as vendas diárias dos dois grupos — se a diferença percentual entre as médias for > 10%, considere significativo
-- Com **3+ grupos**: compare todos os grupos entre si via ANOVA simplificada — se pelo menos um par tiver diferença > 10% na média de vendas diárias, considere significativo
-- **Alpha = 0,05** (nível de confiança de 95%)
+**Teste estatístico (aproximação do t-test/ANOVA com 95% de confiança):**
+
+Para cada grupo, calcule as vendas diárias individuais (uma por linha do CSV). Depois:
+
+1. Calcule a **média diária** de vendas de cada grupo: `média = soma_vendas / n_dias`
+2. Calcule o **desvio padrão** das vendas diárias de cada grupo:
+   - `variancia = soma((venda_dia - média)²) / (n_dias - 1)`
+   - `desvio_padrão = raiz_quadrada(variancia)`
+3. Para cada par de grupos (A e B), calcule o **t-score simplificado**:
+   - `erro_padrão_combinado = raiz_quadrada((desvio_A² / n_A) + (desvio_B² / n_B))`
+   - `t = |média_A - média_B| / erro_padrão_combinado`
+4. **Critério de significância**: se `t > 2,0` o par é significativo (aproxima p < 0,05 com 95% de confiança)
+
+- Com **2 grupos**: significativo se o par único tiver `t > 2,0`
+- Com **3+ grupos**: use ANOVA — significativo se a **maioria dos pares** tiver `t > 2,0`
 - Se **não significativo**: variante_vencedora = "Inconclusivo", decisão = recomendar estender o teste
 
 ### 4. Apontar trade-offs
