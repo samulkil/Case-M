@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File \"D:\\GIT\\Case-M\\scripts\\upload_sheets.ps1\" >> \"D:\\GIT\\Case-M\\scripts\\upload_sheets.log\" 2>&1"
+            "command": "powershell -ExecutionPolicy Bypass -File \".\\scripts\\upload_sheets.ps1\" >> \".\\scripts\\upload_sheets.log\" 2>&1"
           }
         ]
       }

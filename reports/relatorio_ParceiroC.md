@@ -1,8 +1,8 @@
 # Relatório de Análise — Teste A/B Parceiro C
 
-**Data da análise:** 2026-06-16  
-**Período do teste:** 2011-07-01 a 2011-08-14 (45 dias)  
-**Grupos:** Grupo 1 (5% cashback) · Grupo 2 (7% cashback — igual à comissão)
+**Data da análise:** 2026-06-16
+**Período do teste:** 2011-07-01 a 2011-08-14 (45 dias)
+**Grupos:** Grupo 1 (5,00% cashback) · Grupo 2 (7,00% cashback — comissão = cashback, margem zero)
 
 ---
 
@@ -11,35 +11,39 @@
 | Métrica | Grupo 1 | Grupo 2 |
 |---|---|---|
 | Vendas totais | R$ 1.738.460 | R$ 1.685.235 |
-| Cashback distribuído | R$ 86.924 | R$ 117.967 |
-| Comissão recebida | R$ 121.693 | R$ 117.967 |
-| **Cashback rate** | **5,0%** | **7,0%** |
-| **Margem Méliuz** | **2,0%** | **0,0%** |
-| **ROI do cashback** | **20,0x** | **14,3x** |
-| Compradores totais | 4.549 | 4.522 |
+| Compradores (total) | 4.549 | 4.522 |
 | **Compradores/dia** | **101,1** | **100,5** |
 | Ticket médio | R$ 382 | R$ 373 |
-
+| Cashback total | R$ 86.924 | R$ 117.967 |
+| **Cashback rate** | **5,00%** | **7,00%** |
+| Comissão total | R$ 121.693 | R$ 117.967 |
+| **Margem Méliuz** | **2,00%** | **0,00%** |
+| **ROI do cashback** | **20,00x** | **14,28x** |
 
 ---
 
 ## Análise Comparativa
 
-### Alerta crítico: Grupo 2 tem margem zero
-No Grupo 2, o cashback distribuído é **idêntico** ao valor de comissão recebida em todas as datas do teste. Isso significa que o Méliuz não retém nenhuma margem neste grupo — cada real de comissão é integralmente repassado ao usuário.
+### Situação incomum no Grupo 2
+No Grupo 2, a comissão paga pelo parceiro é **exatamente igual** ao cashback distribuído (comissão = cashback em todos os dias). Isso resulta em margem zero para o Méliuz — a operação é um repasse direto, sem geração de receita. Este grupo é inviável como estratégia de escala.
 
 ### Volume de compradores
-Os dois grupos têm volume praticamente idêntico (101,1 vs 100,5 compradores/dia, diferença de **0,6%** — irrelevante). O cashback maior não trouxe nenhum benefício em aquisição de compradores.
+Os dois grupos apresentam volumes praticamente idênticos (101,1 vs 100,5 compradores/dia), com diferença de apenas 0,6%. O cashback maior do Grupo 2 não gerou qualquer incremento relevante em compradores ou GMV.
 
-### Comissão do parceiro
-A taxa de comissão deste parceiro é de 7% (vs 11% dos Parceiros A e B), o que deixa margem operacional muito estreita mesmo no melhor cenário.
+### Eficiência do cashback
+O Grupo 1 tem ROI de 20,00x versus 14,28x do Grupo 2 — diferença de 40%. Apesar de ambos os grupos terem volume similar, o Grupo 1 entrega essa mesma audiência com custo de cashback 26% menor.
+
+### Observação sobre margens
+A margem de 2,00% do Grupo 1 é baixa em comparação com os outros parceiros (Parceiro A: 7,22%, Parceiro B: 7,00%). Pode ser relevante negociar melhores condições de comissão com o Parceiro C no futuro.
 
 ---
 
 ## Recomendação
 
-### ✅ Escalar Grupo 1 para 100% do tráfego
+> **✅ Escalar o Grupo 1 para 100% do tráfego.**
 
-O Grupo 2 é inviável: margem zero significa que qualquer custo operacional adicional (fraude, suporte, chargeback) já torna o parceiro deficitário. O Grupo 1 com 2% de margem é financeiramente superior e atrai praticamente a mesma quantidade de compradores (diferença de 0,6%).
+O Grupo 2 tem margem zero e é operacionalmente inviável. O Grupo 1 mantém margem positiva (2,00%), ROI superior (20,00x) e volume equivalente. A diferença de volume entre os grupos é irrelevante (< 1%), tornando a decisão clara.
 
-**Observação estratégica:** A margem de 2% do G1 ainda é baixa em comparação com outros parceiros. Vale renegociar a taxa de comissão com o Parceiro C antes de escalar, ou avaliar se este parceiro é prioritário no portfólio.
+---
+
+*Análise gerada automaticamente em 2026-06-16*
