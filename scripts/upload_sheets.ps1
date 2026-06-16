@@ -78,6 +78,12 @@ function Parse-CsvLine([string]$line) {
     return $result
 }
 
+# Verificar se resultados.csv existe e foi modificado nos últimos 60 segundos
+if (-not (Test-Path $ResultsPath)) { Write-Host "resultados.csv nao encontrado - nada a enviar."; exit 0 }
+$lastWrite = (Get-Item $ResultsPath).LastWriteTime
+$secondsAgo = (Get-Date) - $lastWrite | Select-Object -ExpandProperty TotalSeconds
+if ($secondsAgo -gt 60) { Write-Host "resultados.csv nao foi modificado recentemente - upload ignorado."; exit 0 }
+
 $rawLines = Get-Content $ResultsPath -Encoding UTF8
 if ($rawLines.Count -le 1) { Write-Host "resultados.csv vazio - nada a enviar."; exit 0 }
 $dataLines = $rawLines | Select-Object -Skip 1 | Where-Object { $_.Trim() -ne '' }
