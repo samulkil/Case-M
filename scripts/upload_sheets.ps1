@@ -108,4 +108,5 @@ $res = Invoke-RestMethod -Method Post `
     -Headers $auth -ContentType "application/json; charset=utf-8" `
     -Body ([Text.Encoding]::UTF8.GetBytes($body))
 
-Write-Host "Google Sheets atualizado: $($res.updates.updatedRows) linha(s) gravadas na aba '$SheetName'."
+$ts = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+Write-Host "[$ts] Google Sheets atualizado: $($res.updates.updatedRows) linha(s) gravadas na aba '$SheetName'."
