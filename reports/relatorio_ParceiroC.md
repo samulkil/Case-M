@@ -1,6 +1,6 @@
 # Relatório de Análise — Teste A/B Parceiro C
 
-**Data da análise:** 2026-06-15  
+**Data da análise:** 2026-06-16  
 **Período do teste:** 2011-07-01 a 2011-08-14 (45 dias)  
 **Grupos:** Grupo 1 (5% cashback) · Grupo 2 (7% cashback — igual à comissão)
 
@@ -11,8 +11,8 @@
 | Métrica | Grupo 1 | Grupo 2 |
 |---|---|---|
 | Vendas totais | R$ 1.738.460 | R$ 1.685.235 |
-| Cashback distribuído | R$ 86.923 | R$ 117.966 |
-| Comissão recebida¹ | R$ 121.692 | R$ 117.966 |
+| Cashback distribuído | R$ 86.924 | R$ 117.967 |
+| Comissão recebida | R$ 121.693 | R$ 117.967 |
 | **Cashback rate** | **5,0%** | **7,0%** |
 | **Margem Méliuz** | **2,0%** | **0,0%** |
 | **ROI do cashback** | **20,0x** | **14,3x** |
@@ -20,7 +20,6 @@
 | **Compradores/dia** | **101,1** | **100,5** |
 | Ticket médio | R$ 382 | R$ 373 |
 
-¹ Taxa de comissão constante de 7% sobre vendas (este parceiro paga comissão menor que os demais), verificada em todas as linhas do dataset.
 
 ---
 

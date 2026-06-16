@@ -1,6 +1,6 @@
 # Relatório de Análise — Teste A/B Parceiro B
 
-**Data da análise:** 2026-06-15  
+**Data da análise:** 2026-06-16  
 **Período do teste:** 2011-05-01 a 2011-06-30 (61 dias)  
 **Grupos:** Grupo 1 (~4% cashback) · Grupo 2 (~6% cashback) · Grupo 3 (~9% cashback)
 
@@ -11,8 +11,8 @@
 | Métrica | Grupo 1 | Grupo 2 | Grupo 3 |
 |---|---|---|---|
 | Vendas totais | R$ 4.093.818 | R$ 2.863.019 | R$ 2.629.963 |
-| Cashback distribuído | R$ 163.753 | R$ 171.781 | R$ 236.697 |
-| Comissão recebida¹ | R$ 450.320 | R$ 314.932 | R$ 289.296 |
+| Cashback distribuído | R$ 163.751 | R$ 171.778 | R$ 236.697 |
+| Comissão recebida | R$ 450.421 | R$ 314.935 | R$ 289.290 |
 | **Cashback rate** | **4,0%** | **6,0%** | **9,0%** |
 | **Margem Méliuz** | **7,0%** | **5,0%** | **2,0%** |
 | **ROI do cashback** | **25,0x** | **16,7x** | **11,1x** |
@@ -20,7 +20,6 @@
 | **Compradores/dia** | **131,0** | **89,4** | **82,4** |
 | Ticket médio | R$ 512 | R$ 525 | R$ 523 |
 
-¹ Taxa de comissão constante de 11% sobre vendas, verificada em todas as linhas do dataset.
 
 ---
 

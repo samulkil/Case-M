@@ -53,16 +53,43 @@ $tok=Invoke-RestMethod -Method Post -Uri "https://oauth2.googleapis.com/token" `
     -Body "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=$jwt"
 $auth=@{Authorization="Bearer $($tok.access_token)"}
 
-# ── 3. Ler CSV ─────────────────────────────────────────────────────────────────
-$rows = Import-Csv $ResultsPath
-if ($rows.Count -eq 0) { Write-Host "resultados.csv vazio - nada a enviar."; exit 0 }
+# ── 3. Ler CSV com parser robusto (campos com virgulas nao precisam de aspas) ──
+# Schema fixo: nome_teste,descricao,variante_vencedora,decisao,data_analise (5 colunas)
+# Estrategia: split nas primeiras 4 virgulas; tudo que sobrar vai para decisao
+function Parse-CsvLine([string]$line) {
+    # Remove aspas duplas que envolvem o campo inteiro, se houver
+    $result = @()
+    $remaining = $line
+    for ($col = 0; $col -lt 4; $col++) {
+        if ($remaining.StartsWith('"')) {
+            # Campo entre aspas: encontrar fechamento
+            $end = $remaining.IndexOf('"', 1)
+            while ($end -lt $remaining.Length - 1 -and $remaining[$end+1] -eq '"') { $end = $remaining.IndexOf('"', $end+2) }
+            $result += $remaining.Substring(1, $end-1) -replace '""','"'
+            $remaining = if ($end+2 -lt $remaining.Length) { $remaining.Substring($end+2) } else { '' }
+        } else {
+            $idx = $remaining.IndexOf(',')
+            if ($idx -lt 0) { $result += $remaining; $remaining = ''; break }
+            $result += $remaining.Substring(0, $idx)
+            $remaining = $remaining.Substring($idx+1)
+        }
+    }
+    $result += $remaining.Trim('"')
+    return $result
+}
+
+$rawLines = Get-Content $ResultsPath -Encoding UTF8
+if ($rawLines.Count -le 1) { Write-Host "resultados.csv vazio - nada a enviar."; exit 0 }
+$dataLines = $rawLines | Select-Object -Skip 1 | Where-Object { $_.Trim() -ne '' }
 
 # ── 4. Montar JSON manualmente (garante array de arrays) ──────────────────────
+$esc = { param($s) ($s + '') -replace '\\','\\' -replace '"','\"' }
 $lines = @()
 $lines += '["nome_teste","descricao","variante_vencedora","decisao","data_analise"]'
-foreach ($r in $rows) {
-    $esc = { param($s) $s -replace '\\','\\' -replace '"','\"' }
-    $lines += '["'+(&$esc $r.nome_teste)+'","'+(&$esc $r.descricao)+'","'+(&$esc $r.variante_vencedora)+'","'+(&$esc $r.decisao)+'","'+(&$esc $r.data_analise)+'"]'
+foreach ($dl in $dataLines) {
+    $f = Parse-CsvLine $dl
+    while ($f.Count -lt 5) { $f += '' }
+    $lines += '["'+(&$esc $f[0])+'","'+(&$esc $f[1])+'","'+(&$esc $f[2])+'","'+(&$esc $f[3])+'","'+(&$esc $f[4])+'"]'
 }
 $body = '{"range":"'+$SheetName+'!A1","majorDimension":"ROWS","values":['+($lines -join ',')+']}'
 

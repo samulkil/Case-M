@@ -42,6 +42,7 @@ Para cada variante (Grupo 1, Grupo 2, etc.), calcule:
 
 ### 5. Registrar na planilha
 - Salve os resultados em `resultados.csv` (schema: `nome_teste,descricao,variante_vencedora,decisao,data_analise`)
+- **Sempre envolva cada campo em aspas duplas** para evitar quebra de parsing por vírgulas internas: `"dataset_01_parceiroA","descrição...","Grupo 1","decisão...","2026-06-16"`
 - Se o arquivo não existir, crie com o cabeçalho; se já existir, sobrescreva com todos os testes analisados
 - O upload para o Google Sheets é feito **automaticamente** pelo hook configurado em `.claude/settings.json` — não tente usar MCP nem chamar scripts manualmente
 
