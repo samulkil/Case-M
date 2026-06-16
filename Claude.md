@@ -54,10 +54,20 @@ Para cada variante (Grupo 1, Grupo 2, etc.), calcule:
 - Formato: apresentável para um gestor, com tabela de métricas e recomendação clara
 
 ### 5. Registrar na planilha
-- Salve os resultados em `resultados.csv` (schema: `nome_teste,descricao,variante_vencedora,decisao,data_analise`)
-- **Sempre envolva cada campo em aspas duplas** para evitar quebra de parsing por vírgulas internas: `"dataset_01_parceiroA","descrição...","Grupo 1","decisão...","2026-06-16"`
+
+Salve em `resultados.csv` seguindo **exatamente** este formato para cada teste:
+
+| Campo | Formato obrigatório | Exemplo |
+|---|---|---|
+| `nome_teste` | `dataset_<nn>_parceiro<X>` | `dataset_01_parceiroA` |
+| `descricao` | `Teste de cashback com <N> variantes: G1=<x>% / G2=<y>% do GMV — <dias> dias` | `Teste de cashback com 3 variantes: G1=4,16% / G2=5,77% / G3=7,42% do GMV — 92 dias` |
+| `variante_vencedora` | `Grupo <N>` ou `Inconclusivo` | `Grupo 1` |
+| `decisao` | `Escalar Grupo <N>: ROI <x>x e margem <y>%. <motivo curto>.` ou `Inconclusivo: estender teste. Melhor grupo provisório: Grupo <N>` | `Escalar Grupo 1: ROI 24,0x e margem 7,22%. Cashback rate mais eficiente.` |
+| `data_analise` | `YYYY-MM-DD` | `2026-06-16` |
+
+- **Sempre envolva cada campo em aspas duplas**
 - Se o arquivo não existir, crie com o cabeçalho; se já existir, sobrescreva com todos os testes analisados
-- O upload para o Google Sheets é feito **automaticamente** pelo hook configurado em `.claude/settings.json` — não tente usar MCP nem chamar scripts manualmente
+- O upload para o Google Sheets é feito **automaticamente** pelo hook — não tente usar MCP nem chamar scripts manualmente
 
 ## Regras importantes
 - Não use Python, scripts ou dependências externas — faça tudo com leitura e escrita de arquivos nativos

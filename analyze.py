@@ -58,59 +58,63 @@ def calc_metrics(df):
 # ─── Estatística ─────────────────────────────────────────────────────────────
 
 def stat_test(df, grupos):
-    """Teste t entre os dois grupos com maior e menor cashback_rate."""
-    resultados = []
+    """
+    Com 2 grupos: teste t simples.
+    Com 3+ grupos: ANOVA para evitar p-hacking por comparações múltiplas.
+    Nível de confiança pré-definido: 95% (alpha = 0.05).
+    """
+    ALPHA = 0.05
+    NIVEL_CONFIANCA = 95
+
     grupo_names = df["Grupos de usuários"].unique()
 
     if len(grupo_names) < 2:
         return None, None, None
 
-    # compara o grupo de maior volume vs menor (ou todos par a par, pega o melhor p)
-    melhor_p = 1.0
-    melhor_par = (grupo_names[0], grupo_names[1])
-    for i in range(len(grupo_names)):
-        for j in range(i + 1, len(grupo_names)):
-            g1 = df[df["Grupos de usuários"] == grupo_names[i]]["vendas totais"]
-            g2 = df[df["Grupos de usuários"] == grupo_names[j]]["vendas totais"]
-            if len(g1) < 2 or len(g2) < 2:
-                continue
-            _, p = stats.ttest_ind(g1, g2)
-            if p < melhor_p:
-                melhor_p = p
-                melhor_par = (grupo_names[i], grupo_names[j])
+    grupos_vendas = [
+        df[df["Grupos de usuários"] == g]["vendas totais"].values
+        for g in grupo_names
+    ]
 
-    g1 = df[df["Grupos de usuários"] == melhor_par[0]]["vendas totais"]
-    g2 = df[df["Grupos de usuários"] == melhor_par[1]]["vendas totais"]
-    _, p_value = stats.ttest_ind(g1, g2)
-    significativo = p_value < 0.05
-    confianca = (1 - p_value) * 100
+    if len(grupo_names) == 2:
+        _, p_value = stats.ttest_ind(grupos_vendas[0], grupos_vendas[1])
+    else:
+        # ANOVA para 3+ grupos — evita p-hacking de comparações múltiplas
+        _, p_value = stats.f_oneway(*grupos_vendas)
 
-    return round(p_value, 4), significativo, round(confianca, 1)
+    significativo = p_value < ALPHA
+
+    return round(p_value, 4), significativo, NIVEL_CONFIANCA
 
 
 # ─── Decisão ─────────────────────────────────────────────────────────────────
 
 def decide_winner(metrics, p_value, significativo):
     """
-    Critério: melhor ROI do cashback (mais vendas por R$ de cashback gasto),
-    com margem positiva para o Méliuz.
+    Critério: melhor ROI do cashback com margem positiva.
+    Se resultado não for significativo, recomenda estender o teste em vez de escalar.
     """
     validos = metrics[metrics["margem_meliuz"] > 0]
     if validos.empty:
-        validos = metrics  # fallback se todas as margens forem negativas
+        validos = metrics
 
     vencedor = validos.sort_values("roi_cashback", ascending=False).iloc[0]
-    return vencedor["Grupos de usuários"], vencedor
+    nome = vencedor["Grupos de usuários"]
+
+    if not significativo:
+        return nome, vencedor, False  # vencedor provisório, mas inconclusivo
+
+    return nome, vencedor, True
 
 
 # ─── Relatório ───────────────────────────────────────────────────────────────
 
-def gerar_relatorio(df, metrics, parceiro, periodo, p_value, significativo, confianca, vencedor, nome_vencedor):
+def gerar_relatorio(df, metrics, parceiro, periodo, p_value, significativo, confianca, vencedor, nome_vencedor, conclusivo):
     os.makedirs("reports", exist_ok=True)
     safe_name = parceiro.replace(" ", "_")
     filepath = f"reports/relatorio_{safe_name}.md"
 
-    sig_texto = f"Significativo (p = {p_value}, confianca {confianca}%)" if significativo else f"Nao significativo (p = {p_value}) - resultado inconclusivo"
+    sig_texto = f"Significativo ao nivel de {confianca}% de confianca (p = {p_value})" if significativo else f"Nao significativo (p = {p_value}) — resultado inconclusivo ao nivel de {confianca}% de confianca"
 
     linhas_tabela = ""
     for _, row in metrics.iterrows():
@@ -146,13 +150,13 @@ def gerar_relatorio(df, metrics, parceiro, periodo, p_value, significativo, conf
 
 ## Recomendação
 
-**Escalar {nome_vencedor}.**
+{"**Escalar " + nome_vencedor + ".**" if conclusivo else "**Inconclusivo — recomenda-se estender o teste.**"}
 
 {nome_vencedor} apresentou o melhor ROI de cashback ({vencedor['roi_cashback']:.1f}x),
 com margem de {vencedor['margem_meliuz']*100:.1f}% para o Méliuz e cashback rate de
 {vencedor['cashback_rate']*100:.1f}% — o melhor equilíbrio entre volume de vendas e
 custo de cashback entre os grupos testados.
-{"O resultado é estatisticamente significativo, indicando que a diferença não é por acaso." if significativo else "Atenção: o resultado não atingiu significância estatística — considere estender o teste antes de escalar."}
+{"O resultado é estatisticamente significativo (ANOVA/t-test, p < 0,05), a diferença entre grupos não é atribuível ao acaso." if conclusivo else "Atenção: a diferença entre grupos não atingiu significância estatística — escalar agora representa risco. Recomenda-se coletar mais dados antes de decidir."}
 """
 
     with open(filepath, "w", encoding="utf-8") as f:
@@ -164,19 +168,46 @@ custo de cashback entre os grupos testados.
 
 # ─── Planilha ────────────────────────────────────────────────────────────────
 
-def registrar_resultado(parceiro, periodo, nome_vencedor, decisao):
-    planilha = "resultados.csv"
+def registrar_resultado(parceiro, periodo, nome_vencedor, decisao, metrics, conclusivo):
+    planilha = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resultados.csv")
     ja_existe = os.path.exists(planilha)
 
+    # nome_teste no formato padrao: dataset_01_parceiroA
+    nome_arquivo = {
+        "Parceiro A": "dataset_01_parceiroA",
+        "Parceiro B": "dataset_02_parceiroB",
+        "Parceiro C": "dataset_03_parceiroC",
+    }.get(parceiro, parceiro.replace(" ", "_"))
+
+    # descricao no formato padrao
+    n_variantes = len(metrics)
+    n_dias = periodo.split(" a ")
+    cashback_rates = " / ".join(
+        f"G{i+1}={row['cashback_rate']*100:.2f}%".replace(".", ",")
+        for i, (_, row) in enumerate(metrics.iterrows())
+    )
+    from datetime import datetime
+    d1 = datetime.strptime(periodo.split(" a ")[0], "%d/%m/%Y")
+    d2 = datetime.strptime(periodo.split(" a ")[1], "%d/%m/%Y")
+    dias = (d2 - d1).days + 1
+    descricao = f"Teste de cashback com {n_variantes} variantes: {cashback_rates} do GMV — {dias} dias"
+
+    # decisao no formato padrao
+    if conclusivo:
+        row = metrics[metrics["Grupos de usuários"] == nome_vencedor].iloc[0]
+        decisao_fmt = f"Escalar {nome_vencedor}: ROI {row['roi_cashback']:.1f}x e margem {row['margem_meliuz']*100:.2f}%. Cashback rate mais eficiente.".replace(".", ",")
+    else:
+        decisao_fmt = f"Inconclusivo: estender teste. Melhor grupo provisório: {nome_vencedor}"
+
     with open(planilha, "a", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, quoting=csv.QUOTE_ALL)
         if not ja_existe:
             writer.writerow(["nome_teste", "descricao", "variante_vencedora", "decisao", "data_analise"])
         writer.writerow([
-            f"Teste {parceiro}",
-            f"Teste A/B de cashback — {parceiro} | {periodo}",
-            nome_vencedor,
-            decisao,
+            nome_arquivo,
+            descricao,
+            nome_vencedor if conclusivo else "Inconclusivo",
+            decisao_fmt,
             date.today().isoformat(),
         ])
 
@@ -215,16 +246,16 @@ def main():
     p_value, significativo, confianca = stat_test(df, metrics)
 
     print("\n Determinando vencedor...")
-    nome_vencedor, vencedor = decide_winner(metrics, p_value, significativo)
-    print(f"  Vencedor: {nome_vencedor}")
+    nome_vencedor, vencedor, conclusivo = decide_winner(metrics, p_value, significativo)
+    print(f"  Vencedor: {nome_vencedor} ({'conclusivo' if conclusivo else 'inconclusivo — estender teste'})")
 
-    decisao = f"Escalar {nome_vencedor} para 100% do tráfego"
+    decisao = f"Escalar {nome_vencedor} para 100% do trafego" if conclusivo else f"Inconclusivo — estender teste (melhor grupo provisorio: {nome_vencedor})"
 
-    print("\n Gerando relatório...")
-    gerar_relatorio(df, metrics, parceiro, periodo, p_value, significativo, confianca, vencedor, nome_vencedor)
+    print("\n Gerando relatorio...")
+    gerar_relatorio(df, metrics, parceiro, periodo, p_value, significativo, confianca, vencedor, nome_vencedor, conclusivo)
 
     print("\n Registrando na planilha...")
-    registrar_resultado(parceiro, periodo, nome_vencedor, decisao)
+    registrar_resultado(parceiro, periodo, nome_vencedor, decisao, metrics, conclusivo)
 
     print(f"\nAnalise concluida! Decisao: {decisao}\n")
 
