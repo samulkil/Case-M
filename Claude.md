@@ -27,7 +27,7 @@ Após o usuário escolher os datasets, pergunte como deseja fazer a análise:
 
 Aguarde a resposta antes de prosseguir.
 
-- Se o usuário escolher **[1]**: siga o fluxo padrão abaixo (passos 1 a 5).
+- Se o usuário escolher **[1]**: analise os datasets **um por vez, sequencialmente**. Só escreva no `resultados.csv` e faça o upload **depois de analisar TODOS os datasets escolhidos** — nunca escreva resultados parciais.
 - Se o usuário escolher **[2]**: execute `python analyze.py datasets/<arquivo>` para cada dataset escolhido, depois registre no Sheets usando o MCP do Google Sheets (mcp-gsheets) — não use PowerShell nem scripts manuais.
 
 ## O que você deve fazer (sempre nessa ordem)
@@ -99,8 +99,9 @@ Salve em `resultados.csv` seguindo **exatamente** este formato para cada teste:
 | `data_analise` | `YYYY-MM-DD` | `2026-06-16` |
 
 - **Sempre envolva cada campo em aspas duplas**
-- Se o arquivo não existir, crie com o cabeçalho; se já existir, sobrescreva com todos os testes analisados
-- O upload para o Google Sheets é feito **automaticamente** pelo hook — não tente usar MCP nem chamar scripts manualmente
+- Só escreva o `resultados.csv` **uma única vez**, com todos os testes analisados juntos — nunca escreva linha por linha durante a análise
+- Se o arquivo não existir, crie com o cabeçalho; se já existir, sobrescreva completamente
+- O upload para o Google Sheets é feito **automaticamente** pelo hook após a escrita — não tente usar MCP nem chamar scripts manualmente
 
 ## Regras importantes
 - Não use Python, scripts ou dependências externas — faça tudo com leitura e escrita de arquivos nativos
