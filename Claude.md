@@ -21,7 +21,7 @@ Após o usuário escolher os datasets, pergunte como deseja fazer a análise:
 
 > **Como você prefere realizar a análise?**
 > 
-> **[1] Apenas Claude Code** — sem dependências externas, funciona em qualquer máquina. ⚠️ Pode levar até 10 minutos.
+> **[1] Apenas Claude Code** — sem dependências externas, funciona em qualquer máquina. ⚠️ Pode levar até 10 minutos e pode solicitar permissões durante a execução — clique em "Sempre permitir" ou "Permitir" para continuar.
 > 
 > **[2] Python + Node.js** — análise mais rápida via scripts otimizados. Requer Python e Node.js instalados na máquina.
 
