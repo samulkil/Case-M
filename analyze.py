@@ -59,37 +59,95 @@ def calc_metrics(df):
 
 def stat_test(df, grupos):
     """
-    Com 2 grupos: teste t simples.
-    Com 3+ grupos: ANOVA para evitar p-hacking por comparações múltiplas.
-    Nível de confiança pré-definido: 95% (alpha = 0.05).
+    Fluxo estatístico (95% de confiança, alpha = 0.05):
+
+      - 2 grupos: teste t de Student (comparação única, sem necessidade de
+        correção para múltiplas comparações).
+      - 3+ grupos: ANOVA omnibus (f_oneway) para detectar SE existe diferença
+        entre algum par de grupos — reporta F e p. A ANOVA não diz ENTRE QUAIS
+        grupos está a diferença; por isso, se o omnibus for significativo,
+        roda-se um teste post-hoc par a par com correção de Bonferroni
+        (Fisher protegido) para identificar QUAIS pares diferem.
+
+    Retorna um dict com todos os resultados (ou None se < 2 grupos).
     """
+    from itertools import combinations
+
     ALPHA = 0.05
     NIVEL_CONFIANCA = 95
 
-    grupo_names = df["Grupos de usuários"].unique()
+    grupo_names = list(df["Grupos de usuários"].unique())
 
     if len(grupo_names) < 2:
-        return None, None, None
+        return None
 
     grupos_vendas = [
         df[df["Grupos de usuários"] == g]["vendas totais"].values
         for g in grupo_names
     ]
 
-    if len(grupo_names) == 2:
-        _, p_value = stats.ttest_ind(grupos_vendas[0], grupos_vendas[1])
-    else:
-        # ANOVA para 3+ grupos — evita p-hacking de comparações múltiplas
-        _, p_value = stats.f_oneway(*grupos_vendas)
+    n_grupos = len(grupo_names)
+    resultado = {
+        "n_grupos": n_grupos,
+        "alpha": ALPHA,
+        "confianca": NIVEL_CONFIANCA,
+        "grupos": grupo_names,
+    }
 
-    significativo = p_value < ALPHA
+    if n_grupos == 2:
+        t_stat, p_value = stats.ttest_ind(grupos_vendas[0], grupos_vendas[1])
+        significativo = bool(p_value < ALPHA)
+        resultado.update({
+            "tipo": "Teste t de Student",
+            "f_stat": None,
+            "t_stat": round(float(abs(t_stat)), 4),
+            "p_value": round(float(p_value), 4),
+            "significativo": significativo,
+            "pares": [{
+                "a": grupo_names[0],
+                "b": grupo_names[1],
+                "p": round(float(p_value), 4),
+                "p_ajustado": round(float(p_value), 4),  # comparação única: sem correção
+                "significativo": significativo,
+            }],
+        })
+        return resultado
 
-    return round(p_value, 4), significativo, NIVEL_CONFIANCA
+    # 3+ grupos: ANOVA omnibus (F, p)
+    f_stat, p_omnibus = stats.f_oneway(*grupos_vendas)
+    omnibus_sig = bool(p_omnibus < ALPHA)
+
+    # Post-hoc par a par com correção de Bonferroni.
+    # Só "conta" como significativo se o omnibus também foi significativo
+    # (procedimento de Fisher protegido).
+    pares_idx = list(combinations(range(n_grupos), 2))
+    m = len(pares_idx)
+    pares = []
+    for i, j in pares_idx:
+        _, p = stats.ttest_ind(grupos_vendas[i], grupos_vendas[j])
+        p_adj = min(float(p) * m, 1.0)  # Bonferroni
+        pares.append({
+            "a": grupo_names[i],
+            "b": grupo_names[j],
+            "p": round(float(p), 4),
+            "p_ajustado": round(p_adj, 4),
+            "significativo": bool(omnibus_sig and p_adj < ALPHA),
+        })
+
+    resultado.update({
+        "tipo": "ANOVA omnibus + post-hoc Bonferroni",
+        "f_stat": round(float(f_stat), 4),
+        "t_stat": None,
+        "p_value": round(float(p_omnibus), 4),  # p do omnibus
+        "significativo": omnibus_sig,
+        "pares": pares,
+    })
+    return resultado
 
 
 # ─── Decisão ─────────────────────────────────────────────────────────────────
 
-def decide_winner(metrics, p_value, significativo):
+def decide_winner(metrics, significativo):
     """
     Critério: melhor ROI do cashback com margem positiva.
     Se resultado não for significativo, recomenda estender o teste em vez de escalar.
@@ -109,12 +167,51 @@ def decide_winner(metrics, p_value, significativo):
 
 # ─── Relatório ───────────────────────────────────────────────────────────────
 
-def gerar_relatorio(df, metrics, parceiro, periodo, p_value, significativo, confianca, vencedor, nome_vencedor, conclusivo):
+def _bloco_estatistica(stat):
+    """Monta a seção 'Análise Estatística' do relatório a partir do dict stat."""
+    confianca = stat["confianca"]
+    significativo = stat["significativo"]
+
+    if stat["f_stat"] is None:
+        # 2 grupos — teste t
+        omnibus = (
+            f"**Teste:** {stat['tipo']} (comparação única, sem correção).\n\n"
+            f"- t = {stat['t_stat']} | p = {stat['p_value']}\n"
+            f"- {'Significativo' if significativo else 'Nao significativo'} "
+            f"ao nivel de {confianca}% de confianca (alpha = {stat['alpha']})"
+        )
+        return omnibus
+
+    # 3+ grupos — ANOVA omnibus + post-hoc Bonferroni
+    omnibus_txt = (
+        f"**Teste:** {stat['tipo']}.\n\n"
+        f"**1. Omnibus (ANOVA):** F = {stat['f_stat']}, p = {stat['p_value']} → "
+        f"{'há diferença significativa entre algum par de grupos' if significativo else 'nenhuma diferença significativa entre os grupos'} "
+        f"(alpha = {stat['alpha']}, {confianca}% de confianca).\n\n"
+        f"A ANOVA indica apenas SE existe diferença, nao entre QUAIS grupos. "
+    )
+    if significativo:
+        omnibus_txt += "Como o omnibus foi significativo, o post-hoc abaixo identifica os pares:\n\n"
+    else:
+        omnibus_txt += "Como o omnibus NAO foi significativo, o post-hoc nao é interpretado (Fisher protegido).\n\n"
+
+    omnibus_txt += "**2. Post-hoc par a par (correção de Bonferroni):**\n\n"
+    omnibus_txt += "| Par | p bruto | p ajustado (Bonferroni) | Significativo? |\n"
+    omnibus_txt += "|---|---|---|---|\n"
+    for par in stat["pares"]:
+        omnibus_txt += (
+            f"| {par['a']} × {par['b']} | {par['p']} | {par['p_ajustado']} | "
+            f"{'Sim' if par['significativo'] else 'Nao'} |\n"
+        )
+    return omnibus_txt
+
+
+def gerar_relatorio(df, metrics, parceiro, periodo, stat, vencedor, nome_vencedor, conclusivo):
     os.makedirs("reports", exist_ok=True)
     safe_name = parceiro.replace(" ", "_")
     filepath = f"reports/relatorio_{safe_name}.md"
 
-    sig_texto = f"Significativo ao nivel de {confianca}% de confianca (p = {p_value})" if significativo else f"Nao significativo (p = {p_value}) — resultado inconclusivo ao nivel de {confianca}% de confianca"
+    sig_texto = _bloco_estatistica(stat)
 
     linhas_tabela = ""
     for _, row in metrics.iterrows():
@@ -133,7 +230,7 @@ def gerar_relatorio(df, metrics, parceiro, periodo, p_value, significativo, conf
 
 - **Período:** {periodo}
 - **Grupos testados:** {', '.join(metrics['Grupos de usuários'].tolist())}
-- **Decisão: Escalar {nome_vencedor} para 100% do tráfego**
+- **Decisão: {("Escalar " + nome_vencedor + " para 100% do tráfego") if conclusivo else ("Inconclusivo — estender teste (melhor grupo provisório: " + nome_vencedor + ")")}**
 
 ## Métricas por Grupo
 
@@ -146,7 +243,7 @@ def gerar_relatorio(df, metrics, parceiro, periodo, p_value, significativo, conf
 
 ## Análise Estatística
 
-- {sig_texto}
+{sig_texto}
 
 ## Recomendação
 
@@ -243,16 +340,22 @@ def main():
     print(metrics[["Grupos de usuários", "compradores", "ticket_medio", "cashback_rate", "margem_meliuz", "roi_cashback"]].to_string(index=False))
 
     print("\n Rodando análise estatística...")
-    p_value, significativo, confianca = stat_test(df, metrics)
+    stat = stat_test(df, metrics)
+    if stat["f_stat"] is not None:
+        print(f"  ANOVA omnibus: F = {stat['f_stat']}, p = {stat['p_value']}")
+        for par in stat["pares"]:
+            print(f"    post-hoc {par['a']} x {par['b']}: p_aj = {par['p_ajustado']} ({'sig' if par['significativo'] else 'ns'})")
+    else:
+        print(f"  Teste t: t = {stat['t_stat']}, p = {stat['p_value']}")
 
     print("\n Determinando vencedor...")
-    nome_vencedor, vencedor, conclusivo = decide_winner(metrics, p_value, significativo)
+    nome_vencedor, vencedor, conclusivo = decide_winner(metrics, stat["significativo"])
     print(f"  Vencedor: {nome_vencedor} ({'conclusivo' if conclusivo else 'inconclusivo — estender teste'})")
 
     decisao = f"Escalar {nome_vencedor} para 100% do trafego" if conclusivo else f"Inconclusivo — estender teste (melhor grupo provisorio: {nome_vencedor})"
 
     print("\n Gerando relatorio...")
-    gerar_relatorio(df, metrics, parceiro, periodo, p_value, significativo, confianca, vencedor, nome_vencedor, conclusivo)
+    gerar_relatorio(df, metrics, parceiro, periodo, stat, vencedor, nome_vencedor, conclusivo)
 
     print("\n Registrando na planilha...")
     registrar_resultado(parceiro, periodo, nome_vencedor, decisao, metrics, conclusivo)

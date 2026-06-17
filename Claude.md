@@ -64,11 +64,13 @@ Depois calcule **sem arredondar valores intermediários** — só arredonde no r
 3. Entre os grupos válidos, escolha o de **maior ROI do cashback**
 4. Esse é o vencedor provisório
 
-**Teste estatístico (aproximação do t-test/ANOVA com 95% de confiança):**
+**Teste estatístico (95% de confiança — mesma lógica do analyze.py):**
+
+O fluxo correto tem **duas etapas** para 3+ grupos: primeiro a **ANOVA omnibus** (diz SE existe diferença entre algum par) e, só se ela for significativa, o **post-hoc par a par com correção de Bonferroni** (diz ENTRE QUAIS grupos está a diferença). Não chame de "ANOVA" um conjunto de t-tests soltos — ANOVA é o teste F omnibus; os t-tests pareados são o post-hoc, e precisam de correção para múltiplas comparações.
 
 **Otimização de cálculo (não altera nenhum resultado):** acumule as estatísticas numa **única passada** pelo CSV, junto com as somas das métricas. Para cada grupo mantenha apenas dois acumuladores além das somas já calculadas: `Σx` (soma das vendas diárias) e `Σx²` (soma dos quadrados das vendas diárias). Além disso, **trabalhe as vendas em milhares (divida cada venda por 1.000) apenas para o teste estatístico** — o t-score é invariante a escala linear, então o resultado e o critério `t > 2,0` são idênticos, mas os quadrados ficam com metade dos dígitos (ex: `93,39²` em vez de `93390²`).
 
-**Paralelização da parte cara (cálculo exato, sem aproximação):** o trabalho pesado do teste é o `Σx²` (≈92 quadrados por grupo). Paralelize-o despachando **um subagente por grupo**, cada um responsável apenas por varrer as linhas do seu grupo e devolver a tripla `(n_dias, Σx, Σx²)` — em milhares, conforme acima. Os subagentes rodam ao mesmo tempo; depois que todos retornarem, **você** combina as triplas e faz o resto (média, desvio, t-score) com meia dúzia de operações finais. Isso reduz o tempo de parede sem mudar nenhum número — é a mesma matemática, apenas calculada em paralelo. Combina com o paralelismo por dataset (paralelismo aninhado: dataset → grupo).
+**Paralelização da parte cara (cálculo exato, sem aproximação):** o trabalho pesado do teste é o `Σx²` (≈92 quadrados por grupo). Paralelize-o despachando **um subagente por grupo**, cada um responsável apenas por varrer as linhas do seu grupo e devolver a tripla `(n_dias, Σx, Σx²)` — em milhares, conforme acima. Os subagentes rodam ao mesmo tempo; depois que todos retornarem, **você** combina as triplas e faz o resto (média, desvio, F omnibus, t pareados) com meia dúzia de operações finais. **As mesmas triplas alimentam tanto a ANOVA omnibus quanto o post-hoc** — não é preciso varrer o CSV de novo. Combina com o paralelismo por dataset (paralelismo aninhado: dataset → grupo).
 
 Para cada grupo (a partir da tripla `(n_dias, Σx, Σx²)` devolvida pelo subagente):
 
@@ -77,14 +79,47 @@ Para cada grupo (a partir da tripla `(n_dias, Σx, Σx²)` devolvida pelo subage
    - `variancia = (Σx² − (Σx)² / n_dias) / (n_dias - 1)`
    - `desvio_padrão = raiz_quadrada(variancia)`
    - Isso evita a segunda varredura dia a dia: não é preciso recalcular `(venda_dia − média)²` para cada dia.
-3. Para cada par de grupos (A e B), calcule o **t-score simplificado**:
+
+**Caso A — exatamente 2 grupos: teste t único (sem correção).**
    - `erro_padrão_combinado = raiz_quadrada((desvio_A² / n_A) + (desvio_B² / n_B))`
    - `t = |média_A - média_B| / erro_padrão_combinado`
-4. **Critério de significância**: se `t > 2,0` o par é significativo (aproxima p < 0,05 com 95% de confiança)
+   - Significativo se `t > 2,0` (aproxima p < 0,05 com 95% de confiança). Comparação única → não há múltiplas comparações a corrigir.
 
-- Com **2 grupos**: significativo se o par único tiver `t > 2,0`
-- Com **3+ grupos**: use ANOVA — significativo se a **maioria dos pares** tiver `t > 2,0`
-- Se **não significativo**: variante_vencedora = "Inconclusivo", decisão = recomendar estender o teste
+**Caso B — 3+ grupos: ANOVA omnibus → post-hoc Bonferroni.**
+
+*Etapa 1 — ANOVA omnibus (teste F).* Usando as mesmas triplas (em milhares), com `N = Σ n_g` (total de dias somando os grupos) e `k = número de grupos`:
+   - Soma de quadrados ENTRE grupos: `SQ_entre = Σ_g [ (Σx_g)² / n_g ] − (Σx_total)² / N`, onde `Σx_total = Σ_g Σx_g`
+   - Soma de quadrados DENTRO dos grupos: `SQ_dentro = Σ_g [ Σx²_g − (Σx_g)² / n_g ]`
+   - Graus de liberdade: `gl_entre = k − 1`, `gl_dentro = N − k`
+   - `F = (SQ_entre / gl_entre) / (SQ_dentro / gl_dentro)`
+   - **Significância do omnibus** (F crítico aproximado, α=0,05, gl_dentro grande):
+
+     | gl_entre | F crítico (~95%) |
+     |---|---|
+     | 1 | 3,9 |
+     | 2 | 3,0 |
+     | 3 | 2,6 |
+     | 4 | 2,4 |
+
+   - Se `F ≤ F_crítico` → **omnibus não significativo**: pare aqui, variante_vencedora = "Inconclusivo", decisão = estender o teste. **Não interprete o post-hoc** (Fisher protegido).
+
+*Etapa 2 — post-hoc par a par (só se o omnibus for significativo).* Para cada par (A, B), calcule o mesmo t-score:
+   - `erro_padrão_combinado = raiz_quadrada((desvio_A² / n_A) + (desvio_B² / n_B))`
+   - `t = |média_A - média_B| / erro_padrão_combinado`
+   - Compare com o **t crítico de Bonferroni**, que depende do número de pares `m = k·(k−1)/2` (corrige a inflação do erro tipo I de testar vários pares):
+
+     | nº de pares `m` (grupos) | t crítico de Bonferroni (~95%) |
+     |---|---|
+     | 1 (2 grupos) | 2,0 |
+     | 3 (3 grupos) | 2,4 |
+     | 6 (4 grupos) | 2,65 |
+     | 10 (5 grupos) | 2,8 |
+
+   - Um par é significativo se `t > t_crítico_Bonferroni`. **Reporte explicitamente quais pares diferem** — é isso que o post-hoc responde e a ANOVA sozinha não responde.
+
+**Resultado final:**
+- variante_vencedora conclusiva **apenas se o omnibus for significativo** (Caso B) ou o t único passar (Caso A). O vencedor segue sendo o de maior ROI com margem positiva (critério acima); o post-hoc serve para mostrar contra quais grupos a diferença é robusta.
+- Se **não significativo**: variante_vencedora = "Inconclusivo", decisão = recomendar estender o teste.
 
 ### 4. Apontar trade-offs
 - Volume: qual grupo tem mais compradores/dia
@@ -94,6 +129,7 @@ Para cada grupo (a partir da tripla `(n_dias, Σx, Σx²)` devolvida pelo subage
 ### 4. Gerar relatório
 - Salvar em `reports/relatorio_<Parceiro>.md`
 - Formato: apresentável para um gestor, com tabela de métricas e recomendação clara
+- Na seção de análise estatística, **deixe explícito o fluxo de duas etapas** para 3+ grupos: (1) o **F do omnibus** com seu veredito (há ou não diferença entre algum par) e (2) a **tabela post-hoc** mostrando, par a par, o t-score, o limiar de Bonferroni usado e se cada par é significativo. Para 2 grupos, mostre o t e o veredito únicos. Nunca rotule de "ANOVA" a soma de t-tests pareados.
 
 ### 5. Registrar na planilha
 
