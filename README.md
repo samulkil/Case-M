@@ -6,7 +6,7 @@ Solução reutilizável para análise de testes A/B de cashback. Basta abrir o C
 
 1. Clone o repositório
 2. Abra o **Claude Code desktop** na pasta do projeto
-3. Digite a pergunta:
+3. Digite a pergunta ou uma variante de:
    > "Dado esse teste A/B, qual variante de cashback devemos escalar pra 100% do tráfego?"
 4. O Claude vai listar os datasets disponíveis em `datasets/` e perguntar quais analisar
 5. Escolha os datasets e depois escolha o **modo de análise** (veja abaixo)
