@@ -68,7 +68,9 @@ Depois calcule **sem arredondar valores intermediários** — só arredonde no r
 
 **Otimização de cálculo (não altera nenhum resultado):** acumule as estatísticas numa **única passada** pelo CSV, junto com as somas das métricas. Para cada grupo mantenha apenas dois acumuladores além das somas já calculadas: `Σx` (soma das vendas diárias) e `Σx²` (soma dos quadrados das vendas diárias). Além disso, **trabalhe as vendas em milhares (divida cada venda por 1.000) apenas para o teste estatístico** — o t-score é invariante a escala linear, então o resultado e o critério `t > 2,0` são idênticos, mas os quadrados ficam com metade dos dígitos (ex: `93,39²` em vez de `93390²`).
 
-Para cada grupo:
+**Paralelização da parte cara (cálculo exato, sem aproximação):** o trabalho pesado do teste é o `Σx²` (≈92 quadrados por grupo). Paralelize-o despachando **um subagente por grupo**, cada um responsável apenas por varrer as linhas do seu grupo e devolver a tripla `(n_dias, Σx, Σx²)` — em milhares, conforme acima. Os subagentes rodam ao mesmo tempo; depois que todos retornarem, **você** combina as triplas e faz o resto (média, desvio, t-score) com meia dúzia de operações finais. Isso reduz o tempo de parede sem mudar nenhum número — é a mesma matemática, apenas calculada em paralelo. Combina com o paralelismo por dataset (paralelismo aninhado: dataset → grupo).
+
+Para cada grupo (a partir da tripla `(n_dias, Σx, Σx²)` devolvida pelo subagente):
 
 1. Calcule a **média diária** de vendas: `média = Σx / n_dias`
 2. Calcule o **desvio padrão** das vendas diárias pela **fórmula computacional** (algebricamente idêntica a `Σ(venda_dia − média)²/(n−1)`, com variância amostral ddof=1, igual ao scipy do analyze.py):
