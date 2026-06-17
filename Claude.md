@@ -27,12 +27,12 @@ Pergunte como deseja fazer a análise:
 > 
 > **[1] Apenas Claude Code** — sem dependências externas, funciona em qualquer máquina. ⚠️ Pode levar até 15 minutos e pode solicitar permissões durante a execução — clique em "Sempre permitir" ou "Permitir" para continuar.
 > 
-> **[2] Python + Node.js** — análise mais rápida via scripts otimizados. Requer Python e Node.js instalados na máquina.
+> **[2] Python** — análise mais rápida via scripts otimizados. Requer Python instalado na máquina.
 
 **Envie APENAS essa pergunta e pare. Aguarde a resposta do usuário antes de começar qualquer análise.**
 
 - Se o usuário escolher **[1]**: analise os datasets **em paralelo** para reduzir o tempo total. Leia e processe os datasets ao mesmo tempo — pode despachar **um subagente por dataset**, cada um responsável por ler seu arquivo, calcular as métricas, determinar o vencedor e gerar o relatório. Só escreva no `resultados.csv` e faça o upload **depois de concluir TODOS os datasets**, consolidando todos os resultados em uma única escrita — nunca escreva resultados parciais.
-- Se o usuário escolher **[2]**: execute `python analyze.py datasets/<arquivo>` para cada dataset escolhido, depois registre no Sheets usando o MCP do Google Sheets (mcp-gsheets) — não use PowerShell nem scripts manuais.
+- Se o usuário escolher **[2]**: execute `python analyze.py datasets/<arquivo>` para cada dataset escolhido e consolide tudo em `resultados.csv`. **Não faça o upload manualmente — nem via MCP, nem via PowerShell, nem chamando scripts.** O envio ao Google Sheets é feito **automaticamente pelo hook** após a escrita do `resultados.csv`, exatamente como no Modo [1]. O hook também é quem registra cada upload em `scripts/upload_sheets.log`.
 
 ## O que você deve fazer (sempre nessa ordem)
 

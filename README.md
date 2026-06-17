@@ -24,19 +24,18 @@ Sem dependências externas, funciona em qualquer máquina com Claude Code instal
 - **Pode levar até 15 minutos** dependendo do tamanho dos datasets
 - **Consome mais créditos do Claude** do que o Modo [2], pois todo o processamento é feito pelo modelo
 
-### Modo [2] — Python + Node.js _(recomendado)_
+### Modo [2] — Python _(recomendado)_
 
-Análise mais rápida via scripts otimizados. Requer Python e Node.js instalados na máquina.
+Análise mais rápida via scripts otimizados. Requer Python instalado na máquina.
 
 - Significativamente mais rápido que o Modo [1]
 - **Consome menos créditos do Claude**, pois o processamento pesado é delegado aos scripts
-- Requer as dependências abaixo instaladas:
+- O upload ao Google Sheets **não** é feito pelos scripts Python: assim como no Modo [1], ele é executado automaticamente pelo hook após a gravação do `resultados.csv` (veja "O que é gerado")
+- Requer a dependência abaixo instalada:
 
 ```bash
 # Instalar dependências Python
 pip install pandas scipy
-
-# Node.js é necessário para o upload ao Google Sheets via MCP
 ```
 
 Para rodar manualmente (sem o Claude Code):
@@ -53,6 +52,8 @@ python analyze.py datasets/dataset_01_parceiroA.csv
 | `resultados.csv` | Consolidado de todos os testes analisados |
 
 Os resultados são enviados automaticamente para o Google Sheets após a gravação do `resultados.csv`.
+
+> **Verificação do upload:** cada envio ao Google Sheets é registrado em `scripts/upload_sheets.log`. Consulte esse arquivo para confirmar se o upload foi concluído com sucesso ou para diagnosticar eventuais falhas — ele guarda o histórico de cada tentativa de upload.
 
 ## Estrutura do projeto
 

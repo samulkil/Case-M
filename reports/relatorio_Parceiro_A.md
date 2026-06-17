@@ -1,82 +1,46 @@
-# Relatório de Teste A/B — Parceiro A
+# Relatório Teste A/B — Parceiro A
 
-**Data da análise:** 2026-06-16
-**Período do teste:** 01/01/2011 a 02/04/2011 (92 dias)
-**Variantes testadas:** 3 grupos de cashback
+## Resumo Executivo
 
----
+- **Período:** 01/01/2011 a 02/04/2011
+- **Grupos testados:** Grupo 1, Grupo 2, Grupo 3
+- **Decisão: Inconclusivo — estender teste (melhor grupo provisório: Grupo 1)**
 
-## Resumo executivo
-
-O teste comparou três níveis de cashback do Parceiro A ao longo de 92 dias.
-À medida que o cashback aumenta (G1 → G2 → G3), o **volume** de compradores
-cresce, mas a **eficiência** (margem Méliuz e ROI do cashback) cai.
-
-O **Grupo 1** é o melhor em rentabilidade: maior ROI do cashback (24,0x),
-maior margem Méliuz (7,22%) e menor cashback rate (4,16%). Porém, o
-**teste estatístico é inconclusivo** — apenas 1 de 3 pares atinge
-significância (t > 2,0). Recomenda-se **estender o teste** antes de escalar.
-
----
-
-## Métricas por grupo
+## Métricas por Grupo
 
 | Grupo | Compradores/dia | Ticket Médio | Cashback Rate | Margem Méliuz | ROI Cashback |
-|---|---|---|---|---|---|
-| Grupo 1 | 104,7 | R$ 581,87 | 4,16% | 7,22% | 24,0x |
-| Grupo 2 | 117,5 | R$ 593,96 | 5,77% | 5,57% | 17,3x |
-| Grupo 3 | 124,0 | R$ 594,73 | 7,42% | 3,89% | 13,5x |
+|-------|----------------|--------------|---------------|---------------|--------------|
+| Grupo 1 | 104 | R$ 582 | 4.2% | 7.2% | 24.0x |
+| Grupo 2 | 117 | R$ 594 | 5.8% | 5.6% | 17.3x |
+| Grupo 3 | 124 | R$ 595 | 7.4% | 3.9% | 13.5x |
 
-Totais do período (92 dias cada grupo):
+> **Cashback Rate**: quanto do GMV foi devolvido em cashback (menor = mais eficiente para o Méliuz)
+> **Margem Méliuz**: (comissão - cashback) / vendas — quanto o Méliuz retém
+> **ROI Cashback**: vendas geradas por cada R$ de cashback distribuído
 
-| Grupo | Compradores | Comissão | Cashback | Vendas (GMV) |
-|---|---|---|---|---|
-| Grupo 1 | 9.633 | R$ 638.135,00 | R$ 233.424,00 | R$ 5.605.173,00 |
-| Grupo 2 | 10.814 | R$ 728.178,00 | R$ 370.659,00 | R$ 6.423.096,00 |
-| Grupo 3 | 11.410 | R$ 767.887,00 | R$ 503.600,00 | R$ 6.785.856,00 |
+## Análise Estatística
 
----
+**Teste:** ANOVA omnibus + post-hoc Bonferroni.
 
-## Análise estatística (aproximação t-test / ANOVA, 95%)
+**1. Omnibus (ANOVA):** F = 2.8733, p = 0.0582 → nenhuma diferença significativa entre os grupos (alpha = 0.05, 95% de confianca).
 
-Vendas diárias em milhares de R$. Médias e desvios-padrão diários:
+A ANOVA indica apenas SE existe diferença, nao entre QUAIS grupos. Como o omnibus NAO foi significativo, o post-hoc nao é interpretado (Fisher protegido).
 
-| Grupo | n (dias) | Média diária | Desvio-padrão |
+**2. Post-hoc par a par (correção de Bonferroni):**
+
+| Par | p bruto | p ajustado (Bonferroni) | Significativo? |
 |---|---|---|---|
-| Grupo 1 | 92 | 60,93 | 32,02 |
-| Grupo 2 | 92 | 69,82 | 37,67 |
-| Grupo 3 | 92 | 73,76 | 41,31 |
+| Grupo 1 × Grupo 2 | 0.0863 | 0.2588 | Nao |
+| Grupo 1 × Grupo 3 | 0.0196 | 0.0587 | Nao |
+| Grupo 2 × Grupo 3 | 0.4996 | 1.0 | Nao |
 
-T-scores por par:
-
-| Par | t-score | Significativo (t > 2,0)? |
-|---|---|---|
-| G1 x G2 | 1,72 | Não |
-| G1 x G3 | 2,36 | Sim |
-| G2 x G3 | 0,68 | Não |
-
-Com 3 grupos, aplica-se o critério ANOVA (maioria dos pares). Apenas
-**1 de 3 pares** é significativo — não há maioria. **Resultado: inconclusivo.**
-
----
-
-## Trade-offs
-
-- **Volume:** Grupo 3 lidera (124,0 compradores/dia) — maior cashback atrai mais compradores.
-- **Eficiência:** Grupo 1 é o mais eficiente (cashback rate 4,16%, ROI 24,0x).
-- O vencedor provisório por ROI (Grupo 1) **não** é o de maior volume (Grupo 3) — há tensão clara entre crescimento e rentabilidade.
-
----
 
 ## Recomendação
 
-**Qual variante escalar para 100% do tráfego?**
+**Inconclusivo — recomenda-se estender o teste.**
 
-No momento, **nenhuma com confiança estatística**. As diferenças de vendas
-diárias entre grupos não são consistentemente significativas (apenas G1xG3).
-Recomenda-se **estender o teste** para acumular mais dias e reduzir a
-variância antes de decidir.
-
-Se uma decisão for forçada hoje, o **Grupo 1** é o melhor candidato
-provisório, por maximizar margem e ROI do cashback com a menor distribuição
-de cashback.
+Grupo 1 apresentou o melhor ROI de cashback (24.0x),
+com margem de 7.2% para o Méliuz e cashback rate de
+4.2% — o melhor equilíbrio entre volume de vendas e
+custo de cashback entre os grupos testados.
+Atenção: a diferença entre grupos não atingiu significância estatística — escalar agora representa risco. Recomenda-se coletar mais dados antes de decidir.
