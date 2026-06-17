@@ -53,6 +53,8 @@ python analyze.py datasets/dataset_01_parceiroA.csv
 
 Os resultados são enviados automaticamente para o Google Sheets após a gravação do `resultados.csv`.
 
+📊 **Planilha de resultados:** [Google Sheets](https://docs.google.com/spreadsheets/d/11n95hFQzc-ax-iLg6tuLK7R4-48DNH9zAth1S6dN7XI/edit?usp=sharing)
+
 > **Verificação do upload:** cada envio ao Google Sheets é registrado em `scripts/upload_sheets.log`. Consulte esse arquivo para confirmar se o upload foi concluído com sucesso ou para diagnosticar eventuais falhas — ele guarda o histórico de cada tentativa de upload.
 
 ## Estrutura do projeto
