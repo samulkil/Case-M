@@ -25,7 +25,7 @@ Pergunte como deseja fazer a análise:
 
 > **Como você prefere realizar a análise?**
 > 
-> **[1] Apenas Claude Code** — sem dependências externas, funciona em qualquer máquina. ⚠️ Pode levar até 15 minutos e pode solicitar permissões durante a execução — clique em "Sempre permitir" ou "Permitir" para continuar.
+> **[1] Apenas Claude Code** — sem dependências externas, funciona em qualquer máquina. ⚠️ Pode levar até 15 minutos e **consome mais créditos do Claude**, pois todo o processamento é feito pelo modelo.
 > 
 > **[2] Python** — análise mais rápida via scripts otimizados. Requer Python instalado na máquina.
 
