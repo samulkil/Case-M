@@ -31,7 +31,7 @@ Pergunte como deseja fazer a análise:
 
 **Envie APENAS essa pergunta e pare. Aguarde a resposta do usuário antes de começar qualquer análise.**
 
-- Se o usuário escolher **[1]**: analise os datasets **estritamente um por vez, em sequência — NÃO leia nem processe múltiplos arquivos ao mesmo tempo**. Fluxo obrigatório: leia o primeiro arquivo → calcule as métricas → determine o vencedor → gere o relatório → guarde o resultado em memória → só então leia o segundo arquivo, e assim por diante. Só escreva no `resultados.csv` e faça o upload **depois de concluir TODOS os datasets** — nunca escreva resultados parciais.
+- Se o usuário escolher **[1]**: analise os datasets **em paralelo** para reduzir o tempo total. Leia e processe os datasets ao mesmo tempo — pode despachar **um subagente por dataset**, cada um responsável por ler seu arquivo, calcular as métricas, determinar o vencedor e gerar o relatório. Só escreva no `resultados.csv` e faça o upload **depois de concluir TODOS os datasets**, consolidando todos os resultados em uma única escrita — nunca escreva resultados parciais.
 - Se o usuário escolher **[2]**: execute `python analyze.py datasets/<arquivo>` para cada dataset escolhido, depois registre no Sheets usando o MCP do Google Sheets (mcp-gsheets) — não use PowerShell nem scripts manuais.
 
 ## O que você deve fazer (sempre nessa ordem)
@@ -66,12 +66,15 @@ Depois calcule **sem arredondar valores intermediários** — só arredonde no r
 
 **Teste estatístico (aproximação do t-test/ANOVA com 95% de confiança):**
 
-Para cada grupo, calcule as vendas diárias individuais (uma por linha do CSV). Depois:
+**Otimização de cálculo (não altera nenhum resultado):** acumule as estatísticas numa **única passada** pelo CSV, junto com as somas das métricas. Para cada grupo mantenha apenas dois acumuladores além das somas já calculadas: `Σx` (soma das vendas diárias) e `Σx²` (soma dos quadrados das vendas diárias). Além disso, **trabalhe as vendas em milhares (divida cada venda por 1.000) apenas para o teste estatístico** — o t-score é invariante a escala linear, então o resultado e o critério `t > 2,0` são idênticos, mas os quadrados ficam com metade dos dígitos (ex: `93,39²` em vez de `93390²`).
 
-1. Calcule a **média diária** de vendas de cada grupo: `média = soma_vendas / n_dias`
-2. Calcule o **desvio padrão** das vendas diárias de cada grupo:
-   - `variancia = soma((venda_dia - média)²) / (n_dias - 1)`
+Para cada grupo:
+
+1. Calcule a **média diária** de vendas: `média = Σx / n_dias`
+2. Calcule o **desvio padrão** das vendas diárias pela **fórmula computacional** (algebricamente idêntica a `Σ(venda_dia − média)²/(n−1)`, com variância amostral ddof=1, igual ao scipy do analyze.py):
+   - `variancia = (Σx² − (Σx)² / n_dias) / (n_dias - 1)`
    - `desvio_padrão = raiz_quadrada(variancia)`
+   - Isso evita a segunda varredura dia a dia: não é preciso recalcular `(venda_dia − média)²` para cada dia.
 3. Para cada par de grupos (A e B), calcule o **t-score simplificado**:
    - `erro_padrão_combinado = raiz_quadrada((desvio_A² / n_A) + (desvio_B² / n_B))`
    - `t = |média_A - média_B| / erro_padrão_combinado`
