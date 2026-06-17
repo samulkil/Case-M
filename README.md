@@ -45,7 +45,7 @@ pip install pandas scipy
 | `reports/relatorio_<Parceiro>.md` | Relatório detalhado por teste |
 | `resultados.csv` | Consolidado de todos os testes analisados |
 
-Os resultados são enviados automaticamente para o Google Sheets após a gravação do `resultados.csv`.
+Os resultados são enviados automaticamente através do hook para o Google Sheets após a gravação do `resultados.csv`.
 
 📊 **Planilha de resultados:** [Google Sheets](https://docs.google.com/spreadsheets/d/11n95hFQzc-ax-iLg6tuLK7R4-48DNH9zAth1S6dN7XI/edit?usp=sharing)
 
