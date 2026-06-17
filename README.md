@@ -38,12 +38,6 @@ Análise mais rápida via scripts otimizados. Requer Python instalado na máquin
 pip install pandas scipy
 ```
 
-Para rodar manualmente (sem o Claude Code):
-
-```bash
-python analyze.py datasets/dataset_01_parceiroA.csv
-```
-
 ## O que é gerado
 
 | Arquivo | Descrição |
