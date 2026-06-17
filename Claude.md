@@ -147,6 +147,7 @@ Salve em `resultados.csv` seguindo **exatamente** este formato para cada teste:
 - Só escreva o `resultados.csv` **uma única vez**, com todos os testes analisados juntos — nunca escreva linha por linha durante a análise
 - Se o arquivo não existir, crie com o cabeçalho; se já existir, sobrescreva completamente
 - O upload para o Google Sheets é feito **automaticamente** pelo hook após a escrita — não tente usar MCP nem chamar scripts manualmente
+- **OBRIGATÓRIO — sempre avise o usuário sobre o upload:** ao final da análise, depois de escrever o `resultados.csv`, inclua **explicitamente na sua resposta** uma frase informando que **o upload para o Google Sheets será feito automaticamente pelo hook assim que esta resposta terminar**. Use o tempo futuro ("será feito"), pois o hook roda no evento `Stop` — ou seja, **depois** da sua mensagem; você não pode confirmar o upload como concluído na mesma resposta. Nunca omita esse aviso, mesmo que o resultado seja "Inconclusivo". Opcionalmente, lembre que o resultado pode ser conferido em `scripts/upload_sheets.log` e na planilha do Google Sheets.
 
 ## Regras importantes
 - Não use Python, scripts ou dependências externas — faça tudo com leitura e escrita de arquivos nativos
