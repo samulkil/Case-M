@@ -58,21 +58,21 @@ Os resultados são enviados automaticamente para o Google Sheets após a gravaç
 │   └── settings.json                # Hook (Stop) que envia o resultados.csv ao Google Sheets
 ├── CLAUDE.md                        # Instruções do agente
 ├── README.md
-├── analyze.py                       # Script Python de análise (Modo [2])
+├── analyze.py                       # Script Python de análise
 ├── datasets/                        # CSVs dos testes A/B (entrada)
 │   ├── dataset_01_parceiroA.csv
 │   ├── dataset_02_parceiroB.csv
 │   └── dataset_03_parceiroC.csv
-├── DatasetsVisualizar/              # Versões .xlsx dos datasets (visualização)
+├── DatasetsVisualizar/              # Versões .xlsx dos datasets para visualização (Não é gerado pela automação)
 │   ├── dataset_01_parceiroAAlterado.xlsx
 │   ├── dataset_02_parceiroBAlterado.xlsx
 │   └── dataset_03_parceiroCAlterado.xlsx
 ├── reports/                         # Relatórios gerados pelo agente (um por parceiro)
 │   ├── relatorio_<Parceiro>.md
 │   └── Visualizar/
-│       └── resultados.xlsx          # Versão .xlsx do consolidado
+│       └── resultados.xlsx          # Versão .xlsx do consolidado apenas para visualização (Não é gerado pela automação)
 ├── resultados.csv                   # Planilha consolidada (saída)
-├── link_planilha_google_sheets.txt  # Link da planilha no Google Sheets
+├── link_planilha_google_sheets.txt  # Link da planilha no Google Sheets 
 ├── electric-block-*.json            # Credenciais da service account (Google Sheets API)
 └── scripts/
     ├── upload_sheets.ps1            # Faz o upload do resultados.csv para o Google Sheets
