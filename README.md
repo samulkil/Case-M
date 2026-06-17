@@ -26,7 +26,7 @@ Sem dependências externas, funciona em qualquer máquina com Claude Code instal
 
 ### Modo [2] — Python _(recomendado)_
 
-Análise mais rápida via scripts otimizados. Requer Python instalado na máquina.
+Análise mais rápida via scripts otimizados. Requer Python e uma dependência instalado na máquina.
 
 - Significativamente mais rápido que o Modo [1]
 - **Consome menos créditos do Claude**, pois o processamento pesado é delegado aos scripts
