@@ -42,7 +42,7 @@ pip install pandas scipy
 
 | Arquivo | Descrição |
 |---|---|
-| `reports/relatorio_<Parceiro>.md` | Relatório detalhado por teste, apresentável para um gestor |
+| `reports/relatorio_<Parceiro>.md` | Relatório detalhado por teste |
 | `resultados.csv` | Consolidado de todos os testes analisados |
 
 Os resultados são enviados automaticamente para o Google Sheets após a gravação do `resultados.csv`.
