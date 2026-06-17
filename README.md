@@ -1,4 +1,4 @@
-# Analisador de Testes A/B — Méliuz
+# Analisador de Testes — Méliuz
 
 Solução reutilizável para análise de testes A/B de cashback. Basta abrir o Claude Code na pasta do projeto e fazer a pergunta em linguagem natural.
 
